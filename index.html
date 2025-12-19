@@ -42,16 +42,19 @@
 
     .topbar{
       display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
+      align-items:center;
+      justify-content:center;
       gap:12px;
       margin-bottom:12px;
+      position:relative;
     }
 
     .title{
       display:flex;
       flex-direction:column;
       gap:4px;
+      align-items:center;
+      text-align:center;
     }
     .title h1{
       font-size:18px;
@@ -72,6 +75,9 @@
       border-radius:999px;
       background:rgba(255,255,255,0.04);
       white-space:nowrap;
+      position:absolute;
+      right:0;
+      bottom:0;
     }
 
     /* Grid */
@@ -128,6 +134,9 @@
 
     .header .cell.hero{
       aspect-ratio:auto;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
     }
 
     .header .cell{
@@ -136,6 +145,8 @@
       text-transform:uppercase;
       letter-spacing:0.5px;
       min-height:58px;
+      justify-content:center;
+      text-align:center;
     }
 
     .cell.corner{
@@ -220,8 +231,8 @@
       box-shadow:0 0 8px rgba(53,208,127,0.5);
     }
     .cell.hero.state-1::before{
-      border-color:rgba(246,201,69,0.9);
-      box-shadow:0 0 8px rgba(246,201,69,0.5);
+      border-color:rgba(53,208,127,0.9);
+      box-shadow:0 0 8px rgba(53,208,127,0.5);
     }
     .cell.hero.state-2 .status-block{
       background:var(--good);
@@ -261,8 +272,7 @@
   <div class="wrap">
     <div class="topbar">
       <div class="title">
-        <h1>Hero Usage Tracker</h1>
-        <div class="sub">Judges edit Google Sheet → this page updates automatically.</div>
+        <h1>Opeator Pick List</h1>
       </div>
       <div class="pill" id="status">Loading…</div>
     </div>
