@@ -128,9 +128,6 @@
 
     .header .cell.hero{
       aspect-ratio:auto;
-      justify-content:center;
-      align-items:center;
-      text-align:center;
     }
 
     .header .cell{
@@ -139,8 +136,6 @@
       text-transform:uppercase;
       letter-spacing:0.5px;
       min-height:58px;
-      justify-content:center;
-      text-align:center;
     }
 
     .cell.corner{
@@ -192,39 +187,36 @@
       text-overflow:ellipsis;
     }
 
-    .status-indicator{
+    .remaining{
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .badge{
+      width:28px;height:28px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.05);
+    }
+
+    .badge-overlay{
       position:absolute;
       right:8px;
       bottom:8px;
-      display:flex;
-      flex-direction:column-reverse;
-      gap:4px;
+      width:26px;
+      height:26px;  
+      font-size:12px;
+      background:rgba(8,12,22,0.85);
       z-index:3;
     }
 
-    .status-block{
-      width:10px;
-      height:14px;
-      border-radius:2px;
-      background:rgba(255,255,255,0.2);
-      box-shadow:0 0 6px rgba(0,0,0,0.35);
-    }
-
-    .cell.hero.state-2{
-      box-shadow: inset 0 0 0 2px rgba(53,208,127,0.8);
-    }
-    .cell.hero.state-1{
-      box-shadow: inset 0 0 0 2px rgba(246,201,69,0.8);
-    }
-    .cell.hero.state-2 .status-block{
-      background:var(--good);
-      box-shadow:0 0 6px rgba(53,208,127,0.6);
-    }
-    .cell.hero.state-1 .status-block{
-      background:var(--warn);
-      box-shadow:0 0 6px rgba(246,201,69,0.6);
-    }
-
+    .state-2 .badge{ outline:2px solid rgba(53,208,127,0.25); color:var(--good); }
+    .state-1 .badge{ outline:2px solid rgba(246,201,69,0.25); color:var(--warn); }
     .state-0{
       filter:none;
     }
@@ -236,9 +228,7 @@
       z-index:2;
       pointer-events:none;
     }
-    .cell.hero.state-0{
-      box-shadow:none;
-    }
+    .state-0 .badge{ outline:2px solid rgba(0, 0, 0, 0.2); color:var(--bad); }
 
     .foot{
       margin-top:10px;
@@ -276,15 +266,15 @@
     const HERO_IMAGES = {
       "DWolf": "img/icon/ava/dwolf.png",
       "Vyron": "img/icon/ava/vyron.png",
-      "Nox": "img/icon/ava/nox.png",
+      "Nox": "img/icon/ava/Nox.png",
       "Tempest": "img/icon/ava/tempest.png",
       "Stinger": "img/icon/ava/stinger.png",
       "Toxik":" img/icon/ava/toxik.png",
       "Sheperd": "img/icon/ava/sherperd.png",
-      "Uluru": "img/icon/ava/uluru.png",
-      "Sineva": "img/icon/ava/sineva.png",
-      "Gizmo": "img/icon/ava/gizmo.png",
-      "Luna": "img/icon/ava/luna.png",
+      "Uluru": "img/icon/ava/Uluru.png",
+      "Sineva": "img/icon/ava/Sineva.png",
+      "Gizmo": "img/icon/ava/Gizmo.png",
+      "Luna": "img/icon/ava/Luna.png",
       "Hackclaw": "img/icon/ava/hackclaw.png",
       "Raptor": "img/icon/ava/raptor.png",
     };
@@ -353,13 +343,12 @@
           const safe = Number.isFinite(rem) ? Math.max(0, Math.min(2, rem)) : 0;
           const img = heroImageFor(h);
           const imgStyle = img ? ` style="background-image:url('${img}');"` : "";
-          const blocks = safe > 0 ? '<span class="status-block"></span>'.repeat(safe) : "";
 
           const cell = document.createElement("div");
           cell.className = `cell hero state-${safe}`;
           cell.innerHTML = `
             <div class="heroIcon" title="${heroLabel(h)}"${imgStyle}></div>
-            <div class="status-indicator">${blocks}</div>
+            <span class="badge badge-overlay">${safe}</span>
           `;
           row.appendChild(cell);
         }
