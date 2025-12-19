@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Delta Force Operator Pick Dashboard</title>
+    <style>
+        :root {
+            --bg-dark: #0a0c0b;
+            --cell-bg: #151817;
+            --accent-green: #00ff88;
+            --accent-yellow: #f3ae1a;
+            --text-gray: #7a7a7a;
+            --border-color: #2a2e2c;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 40px;
+            margin: 0;
+        }
+
+        /* Header giống trong ảnh */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #222;
+            padding-bottom: 15px;
+        }
+
+        .title {
+            font-size: 50px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin: 0;
+        }
+
+        /* Container của bảng */
+        .grid-container {
+            display: grid;
+            /* 1 cột Team + 11 cột nhân vật */
+            grid-template-columns: 180px repeat(11, 1fr);
+            gap: 4px;
+            background-color: #000;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Header cột */
+        .header-cell {
+            background-color: #1a1e1d;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px 5px;
+            text-transform: uppercase;
+        }
+
+        /* Cột thông tin Team */
+        .team-cell {
+            background-color: var(--accent-yellow);
+            color: black;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .team-id { font-size: 12px; opacity: 0.7; }
+        .team-name { font-size: 20px; margin: 5px 0; }
+
+        /* Ô Operator */
+        .op-cell {
+            background-color: var(--cell-bg);
+            height: 110px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        /* Ảnh nhân vật (giả lập) */
+        .op-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.2; /* Mặc định mờ nếu không chọn */
+        }
+
+        .picked .op-img {
+            opacity: 1;
+            filter: brightness(1.1);
+        }
+
+        /* Thanh trạng thái xanh bên trái */
+        .status-indicator {
+            position: absolute;
+            left: 8px;
+            bottom: 12px;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 3px;
+            z-index: 2;
+        }
+
+        .dot {
+            width: 6px;
+            height: 10px;
+            background-color: var(--accent-green);
+            box-shadow: 0 0 5px var(--accent-green);
+        }
+
+        /* Hiệu ứng khi được chọn */
+        .picked {
+            background-color: #1c2522;
+            outline: 1px solid var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1 class="title">OPERATOR PICK</h1>
+    </div>
+</div>
+
+<div id="mainGrid" class="grid-container">
+    </div>
+
+<script>
+    // --- 1. DỮ LIỆU TÙY CHỈNH TẠI ĐÂY ---
+    const operators = ["D-Wolf", "Vyron", "Nox", "Tempest", "Stinger", "Toxik", "Shepherd", "Uluru", "Sineva", "Luna", "Hackclaw"];
+    
+    const teams = [
+        { id: "JP#1", name: "FENNEL", short: "FL", picks: [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+        { id: "EU#2", name: "FALLEN", short: "FN", picks: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+        { id: "NA#1", name: "AKA", short: "AKA", picks: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+        { id: "APAC#1", name: "GS", short: "GS", picks: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+        { id: "KR#1", name: "STS", short: "STS", picks: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+        { id: "CN#2", name: "Q9", short: "Q9", picks: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+    ];
+
+    // --- 2. LOGIC TỰ ĐỘNG VẼ BẢNG ---
+    const grid = document.getElementById('mainGrid');
+
+    // Tạo hàng tiêu đề
+    grid.innerHTML += `<div class="header-cell">TEAMS</div>`;
+    operators.forEach(op => {
+        grid.innerHTML += `<div class="header-cell">${op}</div>`;
+    });
+
+    // Tạo dữ liệu từng team
+    teams.forEach(team => {
+        // Cột tên Team
+        grid.innerHTML += `
+            <div class="team-cell">
+                <div class="team-id">${team.id}</div>
+                <div class="team-name">${team.name}</div>
+                <div class="team-id">${team.short}</div>
+            </div>
+        `;
+
+        // Các ô nhân vật của Team đó
+        team.picks.forEach((isPicked, index) => {
+            const pickedClass = isPicked ? 'picked' : '';
+            // Tạo thanh trạng thái (dot) ngẫu nhiên 1-2 vạch cho giống ảnh
+            const dots = isPicked ? '<div class="dot"></div>'.repeat(Math.floor(Math.random() * 2) + 1) : '';
+            
+            grid.innerHTML += `
+                <div class="op-cell ${pickedClass}">
+                    <div class="status-indicator">${dots}</div>
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${operators[index]}" class="op-img" alt="avatar">
+                </div>
+            `;
+        });
+    });
+</script>
+
+</body>
+</html>

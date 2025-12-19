@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hero Usage Tracker</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:rgba(255,255,255,0.06);
+      --line:rgba(255,255,255,0.12);
+      --text:rgba(255,255,255,0.92);
+      --muted:rgba(255,255,255,0.65);
+      --good:#35d07f;
+      --warn:#f6c945;
+      --bad:#ff5d5d;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 700px at 70% 10%, #1a2a5a 0%, var(--bg) 50%, #070a14 100%);
+      color:var(--text);
+    }
+
+    .wrap{
+      padding:18px 18px 22px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .title h1{
+      font-size:18px;
+      margin:0;
+      letter-spacing:0.6px;
+      text-transform:uppercase;
+    }
+    .title .sub{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .pill{
+      font-size:12px;
+      color:var(--muted);
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,0.04);
+      white-space:nowrap;
+    }
+
+    /* Grid */
+    .grid{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(0,0,0,0.25);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    .row{
+      display:grid;
+      grid-auto-flow:column;
+      grid-auto-columns: minmax(110px, 1fr);
+      align-items:stretch;
+    }
+
+    /* sticky first column */
+    .cell.team, .cell.corner{
+      position:sticky;
+      left:0;
+      z-index:3;
+      background:rgba(10,14,28,0.92);
+      backdrop-filter: blur(6px);
+    }
+
+    .header{
+      position:sticky;
+      top:0;
+      z-index:4;
+    }
+
+    .cell{
+      border-bottom:1px solid var(--line);
+      border-right:1px solid var(--line);
+      padding:10px 10px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      min-height:64px;
+    }
+
+    .cell.hero{
+      position:relative;
+      justify-content:center;
+      gap:0;
+      text-align:center;
+    }
+
+    .header .cell{
+      background:rgba(255,255,255,0.06);
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      min-height:58px;
+    }
+
+    .cell.corner{
+      font-weight:700;
+      letter-spacing:0.5px;
+    }
+
+    .teamName{
+      font-weight:700;
+      font-size:13px;
+      line-height:1.2;
+    }
+    .teamMeta{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .heroIcon{
+      width:38px;height:38px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+      flex:0 0 auto;
+      display:grid;
+      place-items:center;
+      font-size:10px;
+      color:var(--muted);
+    }
+
+    .heroText{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+    .heroName{
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .remaining{
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .badge{
+      width:28px;height:28px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.05);
+    }
+
+    .badge-overlay{
+      position:absolute;
+      right:8px;
+      bottom:8px;
+      width:26px;
+      height:26px;
+      font-size:12px;
+      background:rgba(8,12,22,0.85);
+    }
+
+    .state-2 .badge{ outline:2px solid rgba(53,208,127,0.25); color:var(--good); }
+    .state-1 .badge{ outline:2px solid rgba(246,201,69,0.25); color:var(--warn); }
+    .state-0{
+      opacity:0.35;
+      filter:saturate(0.7);
+    }
+    .state-0 .badge{ outline:2px solid rgba(255,93,93,0.20); color:var(--bad); }
+
+    .foot{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        <h1>Hero Usage Tracker</h1>
+        <div class="sub">Judges edit Google Sheet → this page updates automatically.</div>
+      </div>
+      <div class="pill" id="status">Loading…</div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="foot">
+      <div>Tip: keep hero keys consistent with the sheet header (no spaces preferred).</div>
+      <div id="updated">—</div>
+    </div>
+  </div>
+
+  <script>
+    // === Put your Apps Script Web App "exec" URL here ===
+    const DATA_URL = "https://script.google.com/macros/s/AKfycbzabzAOgmoP0iaOr4BHi5pAP_NC2gwL_AnA13w2h_Ihm-NZ84ZHtnAv07ch4Cy7wGCfag/exec";
+
+    const REFRESH_MS = 3000;
+
+    const gridEl = document.getElementById("grid");
+    const statusEl = document.getElementById("status");
+    const updatedEl = document.getElementById("updated");
+
+    function humanTime(iso){
+      try{
+        const d = new Date(iso);
+        return d.toLocaleString();
+      }catch{ return iso; }
+    }
+
+    function heroLabel(key){
+      // display nicer label (you can change to map custom names)
+      return key.replaceAll("_"," ");
+    }
+
+    function buildGrid(data){
+      const heroes = data.heroes || [];
+      const teams = data.teams || [];
+
+      // Header row
+      const headerRow = document.createElement("div");
+      headerRow.className = "row header";
+
+      const corner = document.createElement("div");
+      corner.className = "cell corner";
+      corner.textContent = "Name";
+      headerRow.appendChild(corner);
+
+      for (const h of heroes){
+        const cell = document.createElement("div");
+        cell.className = "cell hero";
+        cell.innerHTML = `<div class="heroName" title="${heroLabel(h)}">${heroLabel(h)}</div>`;
+        headerRow.appendChild(cell);
+      }
+
+      // Body rows
+      const frag = document.createDocumentFragment();
+      frag.appendChild(headerRow);
+
+      for (const t of teams){
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const teamCell = document.createElement("div");
+        teamCell.className = "cell team";
+        teamCell.innerHTML = `
+          <div>
+            <div class="teamName">${t.teamId || "—"}</div>
+            <div class="teamMeta">3 members • 8 teams total</div>
+          </div>
+        `;
+        row.appendChild(teamCell);
+
+        for (const h of heroes){
+          const rem = Number(t.remaining?.[h] ?? 0);
+          const safe = Number.isFinite(rem) ? Math.max(0, Math.min(2, rem)) : 0;
+
+          const cell = document.createElement("div");
+          cell.className = `cell hero state-${safe}`;
+          cell.innerHTML = `
+            <div class="heroIcon" title="${heroLabel(h)}">
+              IMG
+            </div>
+            <span class="badge badge-overlay">${safe}</span>
+          `;
+          row.appendChild(cell);
+        }
+
+        frag.appendChild(row);
+      }
+
+      gridEl.innerHTML = "";
+      gridEl.appendChild(frag);
+    }
+
+    async function load(){
+      const url = DATA_URL + (DATA_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return await res.json();
+    }
+
+    async function tick(){
+      try{
+        statusEl.textContent = "Connected";
+        const data = await load();
+        buildGrid(data);
+        updatedEl.textContent = "Last update: " + humanTime(data.updatedAt || new Date().toISOString());
+      }catch(err){
+        statusEl.textContent = "Error: " + err.message;
+      }
+    }
+
+    tick();
+    setInterval(tick, REFRESH_MS);
+  </script>
+</body>
+</html>
