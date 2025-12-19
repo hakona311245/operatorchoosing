@@ -160,6 +160,8 @@
       place-items:center;
       font-size:10px;
       color:var(--muted);
+      position:relative;
+      z-index:1;
     }
 
     .heroText{
@@ -201,13 +203,21 @@
       height:26px;
       font-size:12px;
       background:rgba(8,12,22,0.85);
+      z-index:3;
     }
 
     .state-2 .badge{ outline:2px solid rgba(53,208,127,0.25); color:var(--good); }
     .state-1 .badge{ outline:2px solid rgba(246,201,69,0.25); color:var(--warn); }
     .state-0{
-      opacity:0.2;
-      filter:saturate(0.6) brightness(0.7);
+      filter:none;
+    }
+    .state-0::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.8);
+      z-index:2;
+      pointer-events:none;
     }
     .state-0 .badge{ outline:2px solid rgba(0, 0, 0, 0.2); color:var(--bad); }
 
@@ -246,19 +256,19 @@
 
     // Map hero keys to local image paths (fill these in)
     const HERO_IMAGES = {
-      "DWolf": "img/D-worf.png",
-      "Vyron": "img/Vyron.png",
-      "Nox": "img/Nox.png",
-      "Tempest": "img/Tempest.png",
-      "Stinger": "img/Stinger.png",
-      "Toxik":" img/Toxik.png",
-      "Sheperd": "img/Sherperd.png",
-      "Uluru": "img/Uluru.png",
-      "Sineva": "img/Sineva.png",
-      "Gizmo": "img/Gizmo.png",
-      "Luna": "img/Luna.png",
-      "Hackclaw": "img/Hackclaw.png",
-      "Raptor": "img/Raptor.png",
+      "DWolf": "img/icon/ava/dwolf.png",
+      "Vyron": "img/icon/ava/vyron.png",
+      "Nox": "img/icon/ava/nox.png",
+      "Tempest": "img/icon/ava/tempest.png",
+      "Stinger": "img/icon/ava/stinger.png",
+      "Toxik":" img/icon/ava/toxik.png",
+      "Sheperd": "img/icon/ava/sherperd.png",
+      "Uluru": "img/icon/ava/uluru.png",
+      "Sineva": "img/icon/ava/sineva.png",
+      "Gizmo": "img/icon/ava/gizmo.png",
+      "Luna": "img/icon/ava/luna.png",
+      "Hackclaw": "img/icon/ava/hackclaw.png",
+      "Raptor": "img/icon/ava/raptor.png",
     };
 
     const REFRESH_MS = 3000;
