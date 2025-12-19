@@ -187,36 +187,50 @@
       text-overflow:ellipsis;
     }
 
-    .remaining{
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .badge{
-      width:28px;height:28px;
-      border-radius:999px;
-      display:grid;
-      place-items:center;
-      font-weight:800;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,0.05);
-    }
-
-    .badge-overlay{
+    .status-indicator{
       position:absolute;
       right:8px;
       bottom:8px;
-      width:26px;
-      height:26px;  
-      font-size:12px;
-      background:rgba(8,12,22,0.85);
+      display:flex;
+      flex-direction:column-reverse;
+      gap:4px;
       z-index:3;
     }
 
-    .state-2 .badge{ outline:2px solid rgba(53,208,127,0.25); color:var(--good); }
-    .state-1 .badge{ outline:2px solid rgba(246,201,69,0.25); color:var(--warn); }
+    .status-block{
+      width:10px;
+      height:14px;
+      border-radius:2px;
+      background:rgba(255,255,255,0.2);
+      box-shadow:0 0 6px rgba(0,0,0,0.35);
+    }
+
+    .cell.hero.state-2::before,
+    .cell.hero.state-1::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border:2px solid transparent;
+      border-radius:0;
+      z-index:4;
+      pointer-events:none;
+    }
+    .cell.hero.state-2::before{
+      border-color:rgba(53,208,127,0.9);
+      box-shadow:0 0 8px rgba(53,208,127,0.5);
+    }
+    .cell.hero.state-1::before{
+      border-color:rgba(246,201,69,0.9);
+      box-shadow:0 0 8px rgba(246,201,69,0.5);
+    }
+    .cell.hero.state-2 .status-block{
+      background:var(--good);
+      box-shadow:0 0 6px rgba(53,208,127,0.6);
+    }
+    .cell.hero.state-1 .status-block{
+      background:var(--warn);
+      box-shadow:0 0 6px rgba(246,201,69,0.6);
+    }
     .state-0{
       filter:none;
     }
@@ -228,7 +242,9 @@
       z-index:2;
       pointer-events:none;
     }
-    .state-0 .badge{ outline:2px solid rgba(0, 0, 0, 0.2); color:var(--bad); }
+    .cell.hero.state-0{
+      box-shadow:none;
+    }
 
     .foot{
       margin-top:10px;
@@ -343,12 +359,13 @@
           const safe = Number.isFinite(rem) ? Math.max(0, Math.min(2, rem)) : 0;
           const img = heroImageFor(h);
           const imgStyle = img ? ` style="background-image:url('${img}');"` : "";
+          const blocks = safe > 0 ? '<span class="status-block"></span>'.repeat(safe) : "";
 
           const cell = document.createElement("div");
           cell.className = `cell hero state-${safe}`;
           cell.innerHTML = `
             <div class="heroIcon" title="${heroLabel(h)}"${imgStyle}></div>
-            <span class="badge badge-overlay">${safe}</span>
+            <div class="status-indicator">${blocks}</div>
           `;
           row.appendChild(cell);
         }
