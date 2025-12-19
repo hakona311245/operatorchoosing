@@ -140,6 +140,9 @@
       border:1px solid var(--line);
       background:
         linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
       flex:0 0 auto;
       display:grid;
       place-items:center;
@@ -229,6 +232,14 @@
     // === Put your Apps Script Web App "exec" URL here ===
     const DATA_URL = "https://script.google.com/macros/s/AKfycbzabzAOgmoP0iaOr4BHi5pAP_NC2gwL_AnA13w2h_Ihm-NZ84ZHtnAv07ch4Cy7wGCfag/exec";
 
+    // Map hero keys to local image paths (fill these in)
+    const HERO_IMAGES = {
+      "DWolf": "img/D-worf.png",
+      "Vyron": "img/Vyron.png",
+      "Nox": "img/Nox.png",
+      "Tempest": "img/Tempest.png"
+    };
+
     const REFRESH_MS = 3000;
 
     const gridEl = document.getElementById("grid");
@@ -245,6 +256,10 @@
     function heroLabel(key){
       // display nicer label (you can change to map custom names)
       return key.replaceAll("_"," ");
+    }
+
+    function heroImageFor(key){
+      return HERO_IMAGES[key] || "";
     }
 
     function buildGrid(data){
@@ -288,13 +303,13 @@
         for (const h of heroes){
           const rem = Number(t.remaining?.[h] ?? 0);
           const safe = Number.isFinite(rem) ? Math.max(0, Math.min(2, rem)) : 0;
+          const img = heroImageFor(h);
+          const imgStyle = img ? ` style="background-image:url('${img}');"` : "";
 
           const cell = document.createElement("div");
           cell.className = `cell hero state-${safe}`;
           cell.innerHTML = `
-            <div class="heroIcon" title="${heroLabel(h)}">
-              IMG
-            </div>
+            <div class="heroIcon" title="${heroLabel(h)}"${imgStyle}></div>
             <span class="badge badge-overlay">${safe}</span>
           `;
           row.appendChild(cell);
